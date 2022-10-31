@@ -20,6 +20,40 @@ public class ResourceLifeCycle : MonoBehaviour
     private GameObject leftChild;
     private GameObject rightChild;
 
+
+
+    // Fractal System
+
+    private string axiom ="F";
+
+    private Dictionary<string, string> ruleset = new Dictionary<string, string>
+    {
+        {"F","FF+[+F-F-F]-[-F+F+F]"}
+    };
+    
+
+    private Dictionary<string, System.Action<Turtle>> commands = new Dictionary<string, System.Action<Turtle>>
+    {
+        //<sumary>
+        // F move foward
+        // + move left
+        // - move right
+        // [ Push current stat oto stack
+        // ] Pop current drawing
+    
+        {"F", turtle => turtle.Translate(delta:new Vector3(x:0,y:0.05f,z:0))},
+        {"+", turtle => turtle.Rotate(delta:new Vector3(x:Random.Range(23f,27f),y:0,z:0))},
+        {"-", turtle => turtle.Rotate(delta:new Vector3(x:Random.Range(-23f,-27f),y:0,z:0))},
+        {"[", turtle => turtle.Push()},
+        {"]", turtle => turtle.Pop()},
+    
+    };
+
+
+
+
+
+
     // Start is called before the first frame update
     void Awake() {
         rend = GetComponent<Renderer>();
@@ -38,6 +72,7 @@ public class ResourceLifeCycle : MonoBehaviour
     void Start()
     {
         ChangeSprite(state);
+        ChangeSkin(state);
         Debug.Log( gameObject.name + " : - state : "+ state);
     }
 
@@ -49,12 +84,24 @@ public class ResourceLifeCycle : MonoBehaviour
             GeneratorNeighbours();
         }
         ChangeSprite(state);
+        ChangeSkin(state);
     }
 
 
     private void ChangeSprite(int state)
     {
         rend.material.color = colors[state];
+    }
+
+    private void ChangeSkin(int iterations)
+    {
+        
+        var lSystem = new LSystem(axiom , ruleset, commands , transform.position);
+        
+        for(int i = 0 ; i<= iterations ; i++ ){
+            lSystem.GenerateSentence() ;
+        }
+        lSystem.DrawSystem();
     }
 
 
