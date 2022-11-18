@@ -24,8 +24,4 @@ public class Utils
         
     }
 
-    Vector2 VectorFromAngle (float theta) {
-    return new Vector2 (Mathf.Cos(theta), Mathf.Sin(theta)); // Trig is fun
-    }
-
 }

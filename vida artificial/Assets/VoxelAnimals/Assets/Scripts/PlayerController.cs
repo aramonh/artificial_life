@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     private float canJump = 0f;
     Animator anim;
     Rigidbody rb;
-    
+    private int i = 0;
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -19,8 +19,10 @@ public class PlayerController : MonoBehaviour
     }
 
     void Update()
-    {
+    {   
         ControllPlayer();
+    transform.rotation = Quaternion.Euler(new Vector3(0,360,0));
+    i++;
     }
 
     void ControllPlayer()
@@ -32,16 +34,14 @@ public class PlayerController : MonoBehaviour
 
         if (movement != Vector3.zero)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(movement), 0.15f);
-            float angle = Vector3.Angle(movement, transform.forward);
-            Debug.Log(angle);
+            
             anim.SetInteger("Walk", 1);
         }
         else {
             anim.SetInteger("Walk", 0);
         }
 
-        transform.Translate(movement * movementSpeed * Time.deltaTime, Space.World);
+        transform.Translate(transform.forward * movementSpeed * Time.deltaTime, Space.World);
 
         if (Input.GetButtonDown("Jump") && Time.time > canJump)
         {

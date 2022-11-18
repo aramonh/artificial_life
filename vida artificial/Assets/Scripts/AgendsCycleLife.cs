@@ -4,49 +4,201 @@ using UnityEngine;
 
 public class AgendsCycleLife : MonoBehaviour
 {
+    private Utils utils = new Utils();
+
+    
+    public  float timerEnergy = 1;
+    private float timerEnergyRemaining;
+    private float timerEnergyConstant;
+
+    private Vector3 lastPosition = Vector3.zero;
+    private bool IsMoved = false;
+
 
     public float movementSpeed = 3;
-    public float jumpForce = 300;
-    public float timeBeforeNextJump = 1.2f;
-    private float canJump = 0f;
     Animator anim;
     Rigidbody rb;
+
+    public Vector3 position = Vector3.zero;
+    public int direction = 90;
+
+    public int vision = 3;
+
+    public int maxEnergy = 10;
+    public int energy = 1;
+    public float foodPriority = 0.5f; // 0-1 Range
+
+
     
     void Start()
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        position = transform.position;
+        lastPosition = transform.position;
+        timerEnergyRemaining=timerEnergy;
+        timerEnergyConstant=timerEnergy;
     }
 
     void Update()
     {
-        ControllPlayer();
+        moveCheck();
+
+
+        if(energy>0){
+            BoidsDirection();
+            CheckWalls();
+            Walk();
+        }else{
+            // TO DO 
+            //Die
+            Debug.Log("DIE");
+        }
+
+        //If not moving IDLE state
+        if(IsMoved==false){
+            Stop();
+        }
     }
 
-    void ControllPlayer()
+    void BoidsDirection(){
+        int angle = 0;
+        int angleA = 0;
+        int angleB = 0;
+        int angleC = 0;
+        // Angles Prioritys Food and Sex
+        if(energy > (maxEnergy*foodPriority)){
+            //Search Sex
+            Debug.Log("FindSex");
+            // TO DO 
+            // 1.Search somebody inside vision range
+            // 1.YES - set angle to him direction
+            // 1.NOT - set random angle
+            //
+        }else{
+            //Search food
+            Debug.Log("FindFood");
+            // TO DO 
+            // Search somebody inside vision range
+            // YES - set angle to him direction
+            // NOT - set random angle
+        }
+        // Positions trends from anothers chickens
+        // Positions contras from depredators
+        angle = ((angleA + angleB + angleC)/3);
+        //Set new direction to rotate
+        //ChangeAngle(angle);
+        //Rotate the agend
+        //Rotate();
+    }
+
+    void CheckWalls(){
+        int angle = 180;
+        // TO DO - check what direction wall faces to set opposite angle 
+        Vector3 cord = transform.position + ( Vector3.forward );
+        if(utils.isObjectHere(cord)){// check if exist object in new position
+            var colliders = utils.whatsObjectsHere(cord);
+            foreach (var item in colliders)
+            {
+                Debug.Log(item.tag);
+                if (item.tag == "Wall") {
+                    //Set new direction to rotate
+                    ChangeAngle(direction+angle);
+                    break;
+                }
+            }
+            Rotate();
+            
+        }
+        cord = transform.position + ( Vector3.back );
+        if(utils.isObjectHere(cord)){// check if exist object in new position
+            var colliders = utils.whatsObjectsHere(cord);
+            foreach (var item in colliders)
+            {
+                Debug.Log(item.tag);
+                if (item.tag == "Wall") {
+                    //Set new direction to rotate
+                    ChangeAngle(direction+angle);
+                    break;
+                }
+            }
+            Rotate();
+            
+        }
+        cord = transform.position + ( Vector3.left );
+        if(utils.isObjectHere(cord)){// check if exist object in new position
+            var colliders = utils.whatsObjectsHere(cord);
+            foreach (var item in colliders)
+            {
+                Debug.Log(item.tag);
+                if (item.tag == "Wall") {
+                    //Set new direction to rotate
+                    ChangeAngle(direction+angle);
+                    break;
+                }
+            }
+            Rotate();
+            
+        }
+        cord = transform.position + ( Vector3.right );
+        if(utils.isObjectHere(cord)){// check if exist object in new position
+            var colliders = utils.whatsObjectsHere(cord);
+            foreach (var item in colliders)
+            {
+                Debug.Log(item.tag);
+                if (item.tag == "Wall") {
+                    //Set new direction to rotate
+                    ChangeAngle(direction+angle);
+                    break;
+                }
+            }
+            Rotate();
+            
+        }
+
+
+    }
+
+    void ChangeAngle(int angle){
+        if(angle >= 360){
+            direction = angle % 360;
+        }else{
+            direction = angle;
+        }
+    }
+
+    void Rotate(){
+        transform.rotation = Quaternion.Euler(new Vector3(0,direction,0));
+    }
+
+    void Walk()
     {
-        float moveHorizontal = Input.GetAxisRaw("Horizontal");
-        float moveVertical = Input.GetAxisRaw("Vertical");
-
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-
-        if (movement != Vector3.zero)
+        anim.SetInteger("Walk", 1);
+        transform.Translate(transform.forward * movementSpeed * Time.deltaTime, Space.World);
+        if (timerEnergyRemaining > 0)
         {
-            Debug.Log(Quaternion.LookRotation(movement));
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(movement), 0.15f);
-            anim.SetInteger("Walk", 1);
+            timerEnergyRemaining -= Time.deltaTime;
         }
-        else {
-            anim.SetInteger("Walk", 0);
-        }
-
-        transform.Translate(movement * movementSpeed * Time.deltaTime, Space.World);
-
-        if (Input.GetButtonDown("Jump") && Time.time > canJump)
+        else
         {
-                rb.AddForce(0, jumpForce, 0);
-                canJump = Time.time + timeBeforeNextJump;
-                anim.SetTrigger("jump");
+            energy -= 1;
+            timerEnergyRemaining = timerEnergyConstant;
         }
+        
     }
+
+    void Stop(){
+        position = transform.position;
+        anim.SetInteger("Walk", 0);
+    }
+
+    void moveCheck()
+    {
+        Vector3 currentPosition = transform.position;
+        IsMoved  = (currentPosition != lastPosition);
+        lastPosition = currentPosition;
+    }
+
 }
+
+

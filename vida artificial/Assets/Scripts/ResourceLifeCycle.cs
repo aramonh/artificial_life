@@ -96,12 +96,12 @@ public class ResourceLifeCycle : MonoBehaviour
     private void ChangeSkin(int iterations)
     {
         
-        var lSystem = new LSystem(axiom , ruleset, commands , transform.position);
+        // var lSystem = new LSystem(axiom , ruleset, commands , transform.position);
         
-        for(int i = 0 ; i<= iterations ; i++ ){
-            lSystem.GenerateSentence() ;
-        }
-        lSystem.DrawSystem();
+        // for(int i = 0 ; i<= iterations ; i++ ){
+        //     lSystem.GenerateSentence() ;
+        // }
+        // lSystem.DrawSystem();
     }
 
 
@@ -118,10 +118,8 @@ public class ResourceLifeCycle : MonoBehaviour
                 foreach (var item in colliders)
                 {
                     if (item.transform.position == cord) {
-
                         ResourceLifeCycle resourceLifeCycle = item.GetComponent<ResourceLifeCycle>();
                         resourceLifeCycle.state += 1;
-
                         break;
                     }
                 }
@@ -138,10 +136,8 @@ public class ResourceLifeCycle : MonoBehaviour
                 foreach (var item in colliders)
                 {
                     if (item.transform.position == cord) {
-
                         ResourceLifeCycle resourceLifeCycle = item.GetComponent<ResourceLifeCycle>();
                         resourceLifeCycle.state += 1;
-
                         break;
                     }
                 }
@@ -158,10 +154,8 @@ public class ResourceLifeCycle : MonoBehaviour
                 foreach (var item in colliders)
                 {
                     if (item.transform.position == cord) {
-
                         ResourceLifeCycle resourceLifeCycle = item.GetComponent<ResourceLifeCycle>();
                         resourceLifeCycle.state += 1;
-
                         break;
                     }
                 }
@@ -178,10 +172,8 @@ public class ResourceLifeCycle : MonoBehaviour
                 foreach (var item in colliders)
                 {
                     if (item.transform.position == cord) {
-
                         ResourceLifeCycle resourceLifeCycle = item.GetComponent<ResourceLifeCycle>();
                         resourceLifeCycle.state += 1;
-
                         break;
                     }
                 }
