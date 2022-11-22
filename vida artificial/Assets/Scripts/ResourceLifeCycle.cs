@@ -113,6 +113,7 @@ public class ResourceLifeCycle : MonoBehaviour
             if(utils.isObjectHere(cord)==false){// check if exist object in new position
                 GameObject child = Instantiate(resource, cord, Quaternion.identity); // create new resouce in new position
                 child.name = gameObject.name + "F";
+                child.tag = "Resource";
             }else{
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)
@@ -131,6 +132,7 @@ public class ResourceLifeCycle : MonoBehaviour
             if(utils.isObjectHere(cord)==false){// check if exist object in new position
                 GameObject child = Instantiate(resource, cord, Quaternion.identity); // create new resouce in new position
                 child.name = gameObject.name + "R";
+                child.tag = "Resource";
             }else{
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)
@@ -149,6 +151,7 @@ public class ResourceLifeCycle : MonoBehaviour
             if(utils.isObjectHere(cord)==false){// check if exist object in new position
                 GameObject child = Instantiate(resource, cord, Quaternion.identity); // create new resouce in new position
                 child.name = gameObject.name + "L";
+                child.tag = "Resource";
             }else{
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)
@@ -167,6 +170,7 @@ public class ResourceLifeCycle : MonoBehaviour
             if(utils.isObjectHere(cord)==false){// check if exist object in new position
                 GameObject child = Instantiate(resource, cord, Quaternion.identity); // create new resouce in new position
                 child.name = gameObject.name + "B";
+                child.tag = "Resource";
             }else{
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)

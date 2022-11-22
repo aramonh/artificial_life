@@ -60,7 +60,7 @@ public class ResourcesGenerator : MonoBehaviour
         }
         else
         {
-            Generator();
+            //Generator();
             timerResourcesRemaining = timerResourcesConstant;
         }
 
@@ -84,7 +84,7 @@ public class ResourcesGenerator : MonoBehaviour
             if( utils.isObjectHere(cord) == false ){
                 GameObject child = Instantiate(resource , cord, Quaternion.identity); // create new resouce in new position
                 child.name = "ResourceA";
-
+                child.tag = "Resource";
             }else{
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)
@@ -105,6 +105,7 @@ public class ResourcesGenerator : MonoBehaviour
             if(utils.isObjectHere(cord)==false){
                 GameObject child = Instantiate(resource , cord, Quaternion.identity); // create new resouce in new position
                 child.name = "ResourceB";
+                child.tag = "Resource";
             }else{
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)

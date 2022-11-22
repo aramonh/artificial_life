@@ -20,9 +20,9 @@ public class AgendsCycleLife : MonoBehaviour
     Rigidbody rb;
 
     public Vector3 position = Vector3.zero;
-    public int direction = 90;
+    public float direction = 90;
 
-    public int vision = 3;
+    public float vision = 3.0f;
 
     public int maxEnergy = 10;
     public int energy = 1;
@@ -52,7 +52,7 @@ public class AgendsCycleLife : MonoBehaviour
         }else{
             // TO DO 
             //Die
-            Debug.Log("DIE");
+            Die();
         }
 
         //If not moving IDLE state
@@ -61,38 +61,67 @@ public class AgendsCycleLife : MonoBehaviour
         }
     }
 
-    void BoidsDirection(){
-        int angle = 0;
-        int angleA = 0;
-        int angleB = 0;
-        int angleC = 0;
+    void BoidsDirection()
+    {
+        float angle = -999;
+        float angleA = -999;
+        float angleB = -999;
+        float angleC = -999;
         // Angles Prioritys Food and Sex
         if(energy > (maxEnergy*foodPriority)){
-            //Search Sex
             Debug.Log("FindSex");
+            CheckSex();
+            //Search Sex
             // TO DO 
             // 1.Search somebody inside vision range
             // 1.YES - set angle to him direction
             // 1.NOT - set random angle
             //
         }else{
-            //Search food
-            Debug.Log("FindFood");
-            // TO DO 
-            // Search somebody inside vision range
-            // YES - set angle to him direction
-            // NOT - set random angle
+            angleA = CheckFood();
+            if(angleA == -999){
+                angleA = Random.Range(0.0f, 360.0f);
+            }
+            Debug.Log(angleA);
         }
         // Positions trends from anothers chickens
         // Positions contras from depredators
-        angle = ((angleA + angleB + angleC)/3);
+        //angle = ((angleA + angleB + angleC)/3);
+        angle = angleA;
         //Set new direction to rotate
         //ChangeAngle(angle);
         //Rotate the agend
         //Rotate();
     }
 
-    void CheckWalls(){
+    // TO DO CHECK FOOD
+    float CheckFood()
+    {
+        if(utils.isObjectInRange(transform.position, vision)){// check if exist object in new position
+            var colliders = utils.whatsObjectsInRange(transform.position, vision);
+            foreach (var item in colliders)
+            {
+                if (item.tag == "Resource") {
+                    return utils.AngleInDeg(transform.position, item.transform.position);
+                }
+            }
+        }
+        return -999;
+    }
+
+    // TO DO CHECK SEX
+    void CheckSex()
+    {
+
+    }
+
+    void Die()
+    {
+            Debug.Log("DIE");
+    }
+
+    void CheckWalls()
+    {
         int angle = 180;
         // TO DO - check what direction wall faces to set opposite angle 
         Vector3 cord = transform.position + ( Vector3.forward );
@@ -100,74 +129,64 @@ public class AgendsCycleLife : MonoBehaviour
             var colliders = utils.whatsObjectsHere(cord);
             foreach (var item in colliders)
             {
-                Debug.Log(item.tag);
                 if (item.tag == "Wall") {
                     //Set new direction to rotate
-                    ChangeAngle(direction+angle);
+                    ChangeAngleNow(direction+angle);
                     break;
                 }
             }
-            Rotate();
-            
         }
         cord = transform.position + ( Vector3.back );
         if(utils.isObjectHere(cord)){// check if exist object in new position
             var colliders = utils.whatsObjectsHere(cord);
             foreach (var item in colliders)
             {
-                Debug.Log(item.tag);
                 if (item.tag == "Wall") {
                     //Set new direction to rotate
-                    ChangeAngle(direction+angle);
+                    ChangeAngleNow(direction+angle);
                     break;
                 }
             }
-            Rotate();
-            
         }
         cord = transform.position + ( Vector3.left );
         if(utils.isObjectHere(cord)){// check if exist object in new position
             var colliders = utils.whatsObjectsHere(cord);
             foreach (var item in colliders)
             {
-                Debug.Log(item.tag);
                 if (item.tag == "Wall") {
                     //Set new direction to rotate
-                    ChangeAngle(direction+angle);
+                    ChangeAngleNow(direction+angle);
                     break;
                 }
             }
-            Rotate();
-            
         }
         cord = transform.position + ( Vector3.right );
         if(utils.isObjectHere(cord)){// check if exist object in new position
             var colliders = utils.whatsObjectsHere(cord);
             foreach (var item in colliders)
             {
-                Debug.Log(item.tag);
                 if (item.tag == "Wall") {
                     //Set new direction to rotate
-                    ChangeAngle(direction+angle);
+                    ChangeAngleNow(direction+angle);
                     break;
                 }
             }
-            Rotate();
-            
         }
-
-
+        Rotate();
     }
 
-    void ChangeAngle(int angle){
-        if(angle >= 360){
-            direction = angle % 360;
-        }else{
-            direction = angle;
-        }
+    void ChangeAngle(float angle)
+    {
+        direction = utils.FormatAngle(angle);
     }
 
-    void Rotate(){
+    void ChangeAngleNow(float angle)
+    {
+        direction = utils.FormatAngle(angle);
+    }
+
+    void Rotate()
+    {
         transform.rotation = Quaternion.Euler(new Vector3(0,direction,0));
     }
 
@@ -181,13 +200,14 @@ public class AgendsCycleLife : MonoBehaviour
         }
         else
         {
-            energy -= 1;
+            //energy -= 1;
             timerEnergyRemaining = timerEnergyConstant;
         }
         
     }
 
-    void Stop(){
+    void Stop()
+    {
         position = transform.position;
         anim.SetInteger("Walk", 0);
     }
