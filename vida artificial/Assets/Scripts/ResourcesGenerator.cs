@@ -60,7 +60,7 @@ public class ResourcesGenerator : MonoBehaviour
         }
         else
         {
-            //Generator();
+            Generator();
             timerResourcesRemaining = timerResourcesConstant;
         }
 
