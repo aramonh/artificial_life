@@ -8,6 +8,10 @@ public class AgendsLifeCycle : MonoBehaviour
 
     public GameObject agend; 
 
+    public float timerReDirect = 1;
+    private float timerReDirectRemaining;
+    private float timerReDirectConstant;
+
     public float timerEnergy = 5;
     private float timerEnergyRemaining;
     private float timerEnergyConstant;
@@ -16,7 +20,7 @@ public class AgendsLifeCycle : MonoBehaviour
     private float timerSexRemaining;
     private float timerSexConstant;
     private bool CanSex = true;
-
+    private bool CanReDirect = true;
     private Vector3 lastPosition = Vector3.zero;
     private Vector3 position = Vector3.zero;
 
@@ -52,10 +56,13 @@ public class AgendsLifeCycle : MonoBehaviour
         timerEnergyConstant=timerEnergy;
         timerSexRemaining=timerSex;
         timerSexConstant=timerSex;
+        timerReDirectRemaining=timerReDirect;
+        timerReDirectConstant=timerReDirect;
     }
 
     void Update()
     {
+        TimerReDirect();
         SexTimer();
         MoveCheck();
         if(energy>=1){
@@ -63,7 +70,7 @@ public class AgendsLifeCycle : MonoBehaviour
             BoidsDirection();
             Walk();
         }else{
-            Destroy(gameObject);
+            Die();
         }
 
         if(IsMoved==false){
@@ -78,7 +85,7 @@ public class AgendsLifeCycle : MonoBehaviour
         float angleB = -999;
         float angleC = -999;
         // Angles Prioritys Food and Sex
-        if(energy > (maxEnergy*foodPriority)){
+        if(energy > (maxEnergy*foodPriority) && CanSex){
             CheckFood();
             angleA = SearchSex();
         }else{
@@ -89,9 +96,20 @@ public class AgendsLifeCycle : MonoBehaviour
             angleA = Random.Range(0.0f, 360.0f);
         }
         // Positions trends from anothers chickens
+        angleB = SearchAgends();
+        if(angleB == -999){
+            angleB = 0;
+        }
         // Positions contras from depredators
+        angleC = SearchDanger();
+        if(angleC == -999){
+            angleC = 0;
+        }else{
+            angleC = angleC + 180;
+        }
+        
         //angle = ((angleA + angleB + angleC)/3);
-        angle = angleA;
+        angle = angleA + angleB + angleC;
         float diff = utils.FormatAngle(angle - direction);
         if(diff != 0){ 
             if(diff <= 180){
@@ -101,6 +119,28 @@ public class AgendsLifeCycle : MonoBehaviour
             }
             Rotate();
         }
+    }
+
+    float SearchAgends()
+    {   
+        float angle = -999;
+        if(utils.isObjectInRange(transform.position, 2))
+        {
+            var colliders = utils.whatsObjectsInRange(transform.position, 2);
+
+            foreach (var item in colliders)
+            {
+                if (item.tag == "Agend" && item.name != name) 
+                {
+                    if(angle == -999){
+                        angle = utils.AngleInDeg(transform.position, item.transform.position);
+                    }else{
+                        angle = ((angle + utils.AngleInDeg(transform.position, item.transform.position))/5);
+                    }
+                }
+            }
+        }
+        return angle;
     }
 
     float SearchFood()
@@ -161,11 +201,12 @@ public class AgendsLifeCycle : MonoBehaviour
                             son.name = name + agendsLifeCycle.name;
                             son.tag = "Agend";
                             AgendsLifeCycle child = son.GetComponent<AgendsLifeCycle>();
-                            child.vision = ((vision + agendsLifeCycle.vision)/2);
-                            child.maxEnergy = ((maxEnergy + agendsLifeCycle.maxEnergy)/2);
-                            child.energy = ((energy + agendsLifeCycle.energy)/2);
-                            child.foodPriority = ((foodPriority + agendsLifeCycle.foodPriority)/2);
-                            energy = (energy/2);
+                            child.timerEnergy = ((timerEnergy + agendsLifeCycle.timerEnergy)/Random.Range(1.0f, 2.0f));
+                            child.vision = ((vision + agendsLifeCycle.vision)/Random.Range(1.0f, 2.0f));
+                            child.maxEnergy = (int)((maxEnergy + agendsLifeCycle.maxEnergy)/Random.Range(1.0f, 2.0f));
+                            child.energy = (int)((energy + agendsLifeCycle.energy)/Random.Range(1.0f, 2.0f));
+                            child.foodPriority = ((foodPriority + agendsLifeCycle.foodPriority)/Random.Range(1.0f, 2.0f));
+                            energy = (int)(energy/Random.Range(1.0f, 2.0f));
                         }
                         ChangeAngle(direction+Random.Range(100.0f, 260.0f));
                         Rotate();
@@ -185,9 +226,9 @@ public class AgendsLifeCycle : MonoBehaviour
 
     float SearchDanger()
     {
-        if(utils.isObjectInRange(transform.position, vision))
+        if(utils.isObjectInRange(transform.position, 4))
         {
-            var colliders = utils.whatsObjectsInRange(transform.position, vision);
+            var colliders = utils.whatsObjectsInRange(transform.position, 4);
             foreach (var item in colliders)
             {
                 if (item.tag == "Hunter") 
@@ -213,8 +254,12 @@ public class AgendsLifeCycle : MonoBehaviour
                 {
                     if (item.tag == "Wall" ) 
                     {
-                        ChangeAngle(direction+Random.Range(100.0f, 260.0f));
-                        break;
+                        if ( CanReDirect )
+                        {
+                            ChangeAngle(direction+Random.Range(100.0f, 260.0f));
+                            CanReDirect = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -234,8 +279,12 @@ public class AgendsLifeCycle : MonoBehaviour
                 {
                     if (item.tag == "Resource" ) 
                     {
-                        ChangeAngle(direction+Random.Range(100.0f, 260.0f));
-                        break;
+                        if ( CanReDirect )
+                        {
+                            ChangeAngle(direction+Random.Range(100.0f, 260.0f));
+                            CanReDirect = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -243,9 +292,22 @@ public class AgendsLifeCycle : MonoBehaviour
         Rotate();
     }
 
+    void TimerReDirect()
+    {
+        if (timerReDirectRemaining > 0)
+        {
+            timerReDirectRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            CanReDirect = true;
+            timerReDirectRemaining = timerReDirectConstant;
+        }
+    }
+
     void Die()
     {
-            Debug.Log("DIE");
+        Destroy(gameObject);
     }
 
 

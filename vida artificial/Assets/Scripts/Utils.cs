@@ -6,7 +6,7 @@ public class Utils
 {
     public bool isObjectHere(Vector3 position)
     {
-        Collider[] intersecting = Physics.OverlapSphere(position, 0.01f);
+        Collider[] intersecting = Physics.OverlapSphere(position, 0.1f);
         if (intersecting.Length == 0)
         {
             return false;
@@ -19,7 +19,7 @@ public class Utils
 
     public Collider[] whatsObjectsHere(Vector3 position)
     {
-        Collider[] intersecting = Physics.OverlapSphere(position, 0.01f);
+        Collider[] intersecting = Physics.OverlapSphere(position, 0.1f);
         return intersecting;
         
     }

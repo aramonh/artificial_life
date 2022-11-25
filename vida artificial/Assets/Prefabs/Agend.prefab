@@ -434,8 +434,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agend: {fileID: 1969419073538870}
   timerEnergy: 1
+  timerSex: 5
+  state: 
   direction: 90
-  vision: 3
+  vision: 5
   maxEnergy: 10
   energy: 1
   foodPriority: 0.5

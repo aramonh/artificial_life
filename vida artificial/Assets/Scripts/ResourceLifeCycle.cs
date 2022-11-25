@@ -73,7 +73,6 @@ public class ResourceLifeCycle : MonoBehaviour
     {
         ChangeSprite(state);
         ChangeSkin(state);
-        Debug.Log( gameObject.name + " : - state : "+ state);
     }
 
     // Update is called once per frame
