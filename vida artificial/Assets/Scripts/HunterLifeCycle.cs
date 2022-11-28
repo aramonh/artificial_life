@@ -18,7 +18,7 @@ public class HunterLifeCycle : MonoBehaviour
     private float timerCanEatRemaining;
     private float timerCanEatConstant;
 
-    private bool CanEat = false;
+    public bool CanEat = false;
     private bool CanReDirect = true;
 
     private Vector3 lastPosition = Vector3.zero;
@@ -32,7 +32,9 @@ public class HunterLifeCycle : MonoBehaviour
 
 
     public float direction = 90;
-    public float vision = 3.0f;
+    public float vision = 5.0f;
+
+    public Collider presa = null;
 
 
     // Start is called before the first frame update
@@ -56,7 +58,6 @@ public class HunterLifeCycle : MonoBehaviour
         TimerEat();
         MoveCheck();
         CheckWalls();
-        CheckFood();
         BoidsDirection();
         Walk();
 
@@ -67,8 +68,17 @@ public class HunterLifeCycle : MonoBehaviour
 
     void BoidsDirection()
     {
-        float angle = Random.Range(0.0f, 360.0f);
+        float angle = -999;
 
+
+        if(CanEat == true){
+            angle = SearchFood();
+        }
+
+        if(angle == -999)
+        {
+            angle = Random.Range(0.0f, 360.0f);
+        }
         float diff = utils.FormatAngle(angle - direction);
         if(diff != 0){ 
             if(diff <= 180){
@@ -78,6 +88,54 @@ public class HunterLifeCycle : MonoBehaviour
             }
             Rotate();
         }
+    }
+
+    float SearchFood()
+    {
+        if(utils.isObjectInRange(transform.position, vision))
+        {
+            var colliders = utils.whatsObjectsInRange(transform.position, vision);
+            foreach (var item in colliders)
+            {
+                if (item.tag == "Agend") 
+                {   
+                    if(presa == null){
+                        presa = item;
+                        if(1 >= Vector3.Distance(transform.position, item.transform.position))
+                        {
+                            Destroy(item.gameObject);
+                            Eat();
+                            ChangeAngle(direction+Random.Range(100.0f, 260.0f));
+                            Rotate();
+                        }else{
+                            return utils.AngleInDeg(transform.position, item.transform.position);
+                        }
+                    }else{
+                        if(presa == item){
+                            if(1 >= Vector3.Distance(transform.position, item.transform.position))
+                            {
+                                Destroy(item.gameObject);
+                                Eat();
+                                ChangeAngle(direction+Random.Range(100.0f, 260.0f));
+                                Rotate();
+                            }else{
+                                return utils.AngleInDeg(transform.position, item.transform.position);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        presa = null;
+        return -999;
+    }
+
+    void Eat()
+    {
+    countEats++;
+    CanEat = false;
+    timerCanEatRemaining = timerCanEatConstant;
     }
 
 
@@ -91,50 +149,35 @@ public class HunterLifeCycle : MonoBehaviour
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)
                 {
-                    if (item.tag == "Wall" ) 
-                    {
-                        if ( CanReDirect )
+                    if(CanEat){
+                        if(item.tag != "Ground" && item.tag != "Agend") 
                         {
-                            ChangeAngle(direction+Random.Range(100.0f, 260.0f));
-                            CanReDirect = false;
-                            break;
+                            if ( CanReDirect )
+                            {
+                                ChangeAngle(direction+Random.Range(100.0f, 260.0f));
+                                CanReDirect = false;
+                                break;
+                            }
+                        }
+                    }else{
+                        if(item.tag != "Ground" ) 
+                        {
+                            if ( CanReDirect )
+                            {
+                                ChangeAngle(direction+Random.Range(100.0f, 260.0f));
+                                CanReDirect = false;
+                                break;
+                            }
                         }
                     }
+
                 }
             }
         }
         Rotate();
     }
 
-    void CheckFood()
-    {   
-        Vector3[] cardinales = { Vector3.forward , Vector3.back ,  Vector3.left ,Vector3.right };
-        foreach(var cardinal in cardinales)
-        {
-            Vector3 cord = transform.position + ( cardinal );
-            if(utils.isObjectHere(cord)){
-                var colliders = utils.whatsObjectsHere(cord);
-                foreach (var item in colliders)
-                {
-                    if (item.tag == "Agend" ) 
-                    {
-                        if ( CanReDirect )
-                        {
-                            ChangeAngle(direction+Random.Range(100.0f, 260.0f));
-                            CanReDirect = false;
-                            if(CanEat){
-                                Destroy(item.gameObject);
-                                countEats++;
-                                CanEat = false;
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        Rotate();
-    }
+
 
     void TimerReDirect()
     {

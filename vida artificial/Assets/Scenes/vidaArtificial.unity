@@ -215,12 +215,14 @@ MonoBehaviour:
   timerReDirect: 1
   timerEnergy: 10
   timerSex: 5
+  IsScary: 0
   state: 
   direction: 0
   vision: 8
   maxEnergy: 10
   energy: 6
   foodPriority: 0.5
+  gen_skin: 1
 --- !u!1 &130913356
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,8 +399,10 @@ MonoBehaviour:
   countEats: 0
   timerReDirect: 1
   timerCanEat: 15
+  CanEat: 0
   direction: 90
-  vision: 3
+  vision: 6
+  presa: {fileID: 0}
 --- !u!1 &151815069
 GameObject:
   m_ObjectHideFlags: 0
@@ -800,12 +804,14 @@ MonoBehaviour:
   timerReDirect: 1
   timerEnergy: 10
   timerSex: 5
+  IsScary: 0
   state: 
   direction: 0
-  vision: 8
+  vision: 5
   maxEnergy: 10
   energy: 6
   foodPriority: 0.5
+  gen_skin: 180
 --- !u!1 &905245802
 GameObject:
   m_ObjectHideFlags: 0
@@ -1161,12 +1167,14 @@ MonoBehaviour:
   timerReDirect: 1
   timerEnergy: 10
   timerSex: 5
+  IsScary: 0
   state: 
   direction: 0
-  vision: 8
+  vision: 6
   maxEnergy: 10
   energy: 6
   foodPriority: 0.5
+  gen_skin: 80
 --- !u!1001 &1511126779
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1246,8 +1254,10 @@ MonoBehaviour:
   countEats: 0
   timerReDirect: 1
   timerCanEat: 15
+  CanEat: 0
   direction: 90
-  vision: 3
+  vision: 6
+  presa: {fileID: 0}
 --- !u!1001 &1681580714
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1473,9 +1483,11 @@ MonoBehaviour:
   timerReDirect: 1
   timerEnergy: 10
   timerSex: 5
+  IsScary: 0
   state: 
   direction: 0
-  vision: 8
+  vision: 3
   maxEnergy: 10
   energy: 6
   foodPriority: 0.5
+  gen_skin: 240

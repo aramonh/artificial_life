@@ -27,6 +27,8 @@ public class AgendsLifeCycle : MonoBehaviour
     private bool IsMoved = false;
     private float movementSpeed = 3;
 
+    public bool IsScary = false;
+
     private Animator anim;
     private Rigidbody rb;
 
@@ -43,7 +45,11 @@ public class AgendsLifeCycle : MonoBehaviour
     public int energy = 1;
     public float foodPriority = 0.5f; // 0-1 Range
 
+    public int gen_skin = 1;
 
+    private void Awake() {
+        Skin();
+    }
     
     void Start()
     {
@@ -78,6 +84,23 @@ public class AgendsLifeCycle : MonoBehaviour
         }
     }
 
+ Texture2D load_s01_texture;
+void Skin(){
+    var path = Application.dataPath+ "/Textures/skins/skin-" + gen_skin + ".png";
+    byte[] bytes;
+    bytes = System.IO.File.ReadAllBytes (path );
+    load_s01_texture = new Texture2D(1,1);
+    load_s01_texture.LoadImage(bytes);
+    MeshRenderer[] meshRenderers;
+    meshRenderers = GetComponentsInChildren<MeshRenderer>();
+    if (meshRenderers != null)
+    {
+        foreach (var meshRenderer in meshRenderers)
+            meshRenderer.material.SetTexture("_MainTex", load_s01_texture);
+    }
+
+}
+
     void BoidsDirection()
     {
         float angle = -999;
@@ -110,6 +133,9 @@ public class AgendsLifeCycle : MonoBehaviour
         
         //angle = ((angleA + angleB + angleC)/3);
         angle = angleA + angleB + angleC;
+        if(IsScary){
+            angle = angleC;
+        }
         float diff = utils.FormatAngle(angle - direction);
         if(diff != 0){ 
             if(diff <= 180){
@@ -124,9 +150,9 @@ public class AgendsLifeCycle : MonoBehaviour
     float SearchAgends()
     {   
         float angle = -999;
-        if(utils.isObjectInRange(transform.position, 2))
+        if(utils.isObjectInRange(transform.position, vision))
         {
-            var colliders = utils.whatsObjectsInRange(transform.position, 2);
+            var colliders = utils.whatsObjectsInRange(transform.position, vision);
 
             foreach (var item in colliders)
             {
@@ -135,7 +161,7 @@ public class AgendsLifeCycle : MonoBehaviour
                     if(angle == -999){
                         angle = utils.AngleInDeg(transform.position, item.transform.position);
                     }else{
-                        angle = ((angle + utils.AngleInDeg(transform.position, item.transform.position))/5);
+                        angle = ((angle + utils.AngleInDeg(transform.position, item.transform.position))/8);
                     }
                 }
             }
@@ -206,6 +232,8 @@ public class AgendsLifeCycle : MonoBehaviour
                             child.maxEnergy = (int)((maxEnergy + agendsLifeCycle.maxEnergy)/Random.Range(1.0f, 2.0f));
                             child.energy = (int)((energy + agendsLifeCycle.energy)/Random.Range(1.0f, 2.0f));
                             child.foodPriority = ((foodPriority + agendsLifeCycle.foodPriority)/Random.Range(1.0f, 2.0f));
+                            child.gen_skin = (int)((gen_skin + agendsLifeCycle.gen_skin)/Random.Range(1.5f, 5.0f));
+                            
                             energy = (int)(energy/Random.Range(1.0f, 2.0f));
                         }
                         ChangeAngle(direction+Random.Range(100.0f, 260.0f));
@@ -226,17 +254,22 @@ public class AgendsLifeCycle : MonoBehaviour
 
     float SearchDanger()
     {
-        if(utils.isObjectInRange(transform.position, 4))
+        if(utils.isObjectInRange(transform.position, vision))
         {
-            var colliders = utils.whatsObjectsInRange(transform.position, 4);
+            var colliders = utils.whatsObjectsInRange(transform.position, vision);
             foreach (var item in colliders)
             {
                 if (item.tag == "Hunter") 
                 {
-                    return utils.AngleInDeg(transform.position, item.transform.position);
+                    HunterLifeCycle hunterLifeCycle = item.GetComponent<HunterLifeCycle>();
+                    if(hunterLifeCycle.presa.name == name || hunterLifeCycle.CanEat){
+                        IsScary = true;
+                        return utils.AngleInDeg(transform.position, item.transform.position);
+                    }
                 }
             }
         }
+        IsScary = false;
         return -999;
     }
 
@@ -252,7 +285,7 @@ public class AgendsLifeCycle : MonoBehaviour
                 var colliders = utils.whatsObjectsHere(cord);
                 foreach (var item in colliders)
                 {
-                    if (item.tag == "Wall" ) 
+                    if (item.tag != "Ground" && item.tag != "Resource" ) 
                     {
                         if ( CanReDirect )
                         {

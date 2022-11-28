@@ -433,8 +433,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agend: {fileID: 1969419073538870}
+  timerReDirect: 1
   timerEnergy: 1
   timerSex: 5
+  IsScary: 0
   state: 
   direction: 90
   vision: 5
