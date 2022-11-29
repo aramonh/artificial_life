@@ -80,7 +80,7 @@ public class ResourcesGenerator : MonoBehaviour
     {
         if(currentStation == stationA){
             // Crear recurso central en ubicacion A
-            Vector3 cord = new Vector3(-5, 0.5f, -5);
+            Vector3 cord = new Vector3(-5, 0.2f, -5);
             if( utils.isObjectHere(cord) == false ){
                 GameObject child = Instantiate(resource , cord, Quaternion.identity); // create new resouce in new position
                 child.name = "ResourceA";
@@ -101,7 +101,7 @@ public class ResourcesGenerator : MonoBehaviour
             }
         }else{
             // Crear recurso central en ubicacion B
-            Vector3 cord = new Vector3(5, 0.5f, 5);
+            Vector3 cord = new Vector3(5, 0.2f, 5);
             if(utils.isObjectHere(cord)==false){
                 GameObject child = Instantiate(resource , cord, Quaternion.identity); // create new resouce in new position
                 child.name = "ResourceB";

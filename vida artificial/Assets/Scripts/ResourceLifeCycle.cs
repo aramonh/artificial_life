@@ -20,37 +20,10 @@ public class ResourceLifeCycle : MonoBehaviour
     private GameObject leftChild;
     private GameObject rightChild;
 
-
-
-    // Fractal System
-
-    private string axiom ="F";
-
-    private Dictionary<string, string> ruleset = new Dictionary<string, string>
-    {
-        {"F","FF+[+F-F-F]-[-F+F+F]"}
-    };
-    
-
-    private Dictionary<string, System.Action<Turtle>> commands = new Dictionary<string, System.Action<Turtle>>
-    {
-        //<sumary>
-        // F move foward
-        // + move left
-        // - move right
-        // [ Push current stat oto stack
-        // ] Pop current drawing
-    
-        {"F", turtle => turtle.Translate(delta:new Vector3(x:0,y:0.05f,z:0))},
-        {"+", turtle => turtle.Rotate(delta:new Vector3(x:Random.Range(23f,27f),y:0,z:0))},
-        {"-", turtle => turtle.Rotate(delta:new Vector3(x:Random.Range(-23f,-27f),y:0,z:0))},
-        {"[", turtle => turtle.Push()},
-        {"]", turtle => turtle.Pop()},
-    
-    };
-
-
-
+    public Mesh mesh1 = null; 
+    public Mesh mesh2 = null; 
+    public Mesh mesh3 = null; 
+    public Mesh mesh4 = null; 
 
 
 
@@ -92,15 +65,32 @@ public class ResourceLifeCycle : MonoBehaviour
         rend.material.color = colors[state];
     }
 
-    private void ChangeSkin(int iterations)
+    private void ChangeSkin(int state)
     {
         
-        // var lSystem = new LSystem(axiom , ruleset, commands , transform.position);
-        
-        // for(int i = 0 ; i<= iterations ; i++ ){
-        //     lSystem.GenerateSentence() ;
-        // }
-        // lSystem.DrawSystem();
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+        Debug.Log(mesh);
+
+        switch (state)
+        {
+        case 4:
+            mesh = mesh4;
+            break;
+        case 3:
+            mesh = mesh3;
+            break;
+        case 2:
+            mesh = mesh2;
+            break;
+        case 1:
+            mesh = mesh1;
+            break;
+        default:
+            mesh = mesh1;
+            break;
+        }
+
+        GetComponent<MeshFilter>().mesh = mesh;
     }
 
 
